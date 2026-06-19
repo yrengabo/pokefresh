@@ -1,149 +1,257 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Buscar Bichito</title>
+<title>Buscar Bichito</title>
 
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: black;
-      font-family: Arial, sans-serif;
-      color: white;
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    overflow:hidden;
+    background:black;
+    font-family:Arial,sans-serif;
+    color:white;
+}
+
+video{
+    position:fixed;
+    inset:0;
+    width:100vw;
+    height:100vh;
+    object-fit:cover;
+    background:black;
+    z-index:1;
+}
+
+.mensaje{
+    position:fixed;
+    top:20px;
+    left:16px;
+    right:16px;
+    padding:14px;
+    border-radius:16px;
+    background:rgba(0,0,0,.45);
+    backdrop-filter:blur(10px);
+    text-align:center;
+    z-index:10;
+}
+
+.hud{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    display:grid;
+    place-items:center;
+    z-index:5;
+}
+
+.reticula{
+    width:180px;
+    height:180px;
+    border:3px solid rgba(69,243,255,.9);
+    border-radius:50%;
+    box-shadow:0 0 30px rgba(69,243,255,.8);
+    animation:pulse 1.5s infinite;
+}
+
+model-viewer{
+    position:fixed;
+    left:50%;
+    top:52%;
+    transform:translate(-50%,-50%);
+    width:280px;
+    height:280px;
+    background:transparent;
+    display:none;
+    z-index:8;
+}
+
+.controles{
+    position:fixed;
+    bottom:24px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:12px;
+    z-index:20;
+}
+
+button{
+    border:0;
+    border-radius:999px;
+    padding:14px 22px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.capturar{
+    background:#45f3ff;
+    color:#06111f;
+}
+
+.volver{
+    background:rgba(255,255,255,.18);
+    color:white;
+    backdrop-filter:blur(10px);
+}
+
+@keyframes pulse{
+
+    0%{
+        transform:scale(.95);
+        opacity:.7;
     }
 
-    video {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
-      background: black;
+    50%{
+        transform:scale(1.05);
+        opacity:1;
     }
 
-    .hud {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      display: grid;
-      place-items: center;
+    100%{
+        transform:scale(.95);
+        opacity:.7;
     }
 
-    .reticula {
-      width: 170px;
-      height: 170px;
-      border: 3px solid rgba(69,243,255,.9);
-      border-radius: 50%;
-      box-shadow: 0 0 30px rgba(69,243,255,.8);
-      animation: pulse 1.5s infinite;
-    }
+}
 
-    .mensaje {
-      position: fixed;
-      top: 24px;
-      left: 16px;
-      right: 16px;
-      padding: 14px;
-      border-radius: 16px;
-      background: rgba(0,0,0,.45);
-      backdrop-filter: blur(10px);
-      text-align: center;
-      font-size: 15px;
-    }
+</style>
 
-    .bichito {
-      position: fixed;
-      left: 50%;
-      top: 52%;
-      transform: translate(-50%, -50%);
-      font-size: 90px;
-      display: none;
-      animation: aparecer .6s ease;
-    }
-
-    button {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 0;
-      padding: 14px 22px;
-      border-radius: 999px;
-      font-weight: bold;
-      background: #45f3ff;
-      color: #06111f;
-      z-index: 10;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(.95); opacity: .7; }
-      50% { transform: scale(1.05); opacity: 1; }
-      100% { transform: scale(.95); opacity: .7; }
-    }
-
-    @keyframes aparecer {
-      from { transform: translate(-50%, -50%) scale(.3); opacity: 0; }
-      to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-    }
-  </style>
 </head>
 
 <body>
 
-  <video id="video" autoplay playsinline></video>
+<video id="video" autoplay playsinline></video>
 
-  <div class="mensaje" id="mensaje">
-    Escanea el entorno...
-  </div>
+<div class="mensaje" id="mensaje">
+Escaneando entorno...
+</div>
 
-  <div class="hud">
+<div class="hud">
     <div class="reticula"></div>
-  </div>
+</div>
 
-  <div class="bichito" id="bichito">🐉</div>
+<model-viewer
+ id="bichito3D"
+ src="dragon.glb"
+ camera-controls
+ auto-rotate
+ shadow-intensity="1"
+ exposure="1"> </model-viewer>
 
-  <button onclick="capturarBichito()">Capturar bichito</button>
+<div class="controles">
 
-  <script>
-    const video = document.getElementById("video");
-    const mensaje = document.getElementById("mensaje");
-    const bichito = document.getElementById("bichito");
+```
+<button class="capturar"
+        onclick="capturarBichito()">
+    Capturar
+</button>
 
-    iniciarCamara();
+<button class="volver"
+        onclick="volverRadar()">
+    ← Volver
+</button>
+```
 
-    function iniciarCamara() {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        mensaje.innerHTML = "Tu navegador no permite abrir la cámara.";
+</div>
+
+<script>
+
+const video = document.getElementById("video");
+const mensaje = document.getElementById("mensaje");
+const bichito3D = document.getElementById("bichito3D");
+
+iniciarCamara();
+
+function iniciarCamara(){
+
+    if(
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+    ){
+
+        mensaje.innerHTML =
+        "Tu navegador no permite abrir la cámara.";
+
         return;
-      }
+    }
 
-      navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: "environment"
+    navigator.mediaDevices.getUserMedia({
+
+        video:{
+            facingMode:"environment"
         },
-        audio: false
-      })
-      .then((stream) => {
+
+        audio:false
+
+    })
+
+    .then((stream)=>{
+
         video.srcObject = stream;
 
-        setTimeout(() => {
-          mensaje.innerHTML = "¡Movimiento detectado! El bichito apareció.";
-          bichito.style.display = "block";
-        }, 3000);
-      })
-      .catch(() => {
-        mensaje.innerHTML = "No se pudo abrir la cámara. Revisa permisos.";
-      });
+        setTimeout(()=>{
+
+            mensaje.innerHTML =
+            "¡Bichito encontrado!";
+
+            bichito3D.style.display =
+            "block";
+
+        },3000);
+
+    })
+
+    .catch((error)=>{
+
+        console.error(error);
+
+        mensaje.innerHTML =
+        "No se pudo abrir la cámara. Revisa permisos.";
+
+    });
+
+}
+
+function capturarBichito(){
+
+    mensaje.innerHTML =
+    "✨ ¡Bichito capturado! ✨";
+
+    bichito3D.style.display =
+    "none";
+
+}
+
+function volverRadar(){
+
+    const stream =
+    video.srcObject;
+
+    if(stream){
+
+        stream
+        .getTracks()
+        .forEach(track => track.stop());
+
     }
 
-    function capturarBichito() {
-      mensaje.innerHTML = "¡Bichito capturado!";
-      bichito.innerHTML = "✨";
-    }
-  </script>
+    window.location.href =
+    "index.html";
+
+}
+
+</script>
 
 </body>
 </html>
+
