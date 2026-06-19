@@ -1,1 +1,148 @@
 
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Cartilla de Bichitos</title>
+
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+
+<style>
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#07111f;
+    color:white;
+}
+
+header{
+    padding:20px;
+    text-align:center;
+    background:#10243f;
+    box-shadow:0 5px 20px rgba(0,0,0,.3);
+}
+
+.contenedor{
+    padding:20px;
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:20px;
+}
+
+.tarjeta{
+    background:rgba(255,255,255,.08);
+    border-radius:20px;
+    padding:15px;
+    backdrop-filter:blur(10px);
+}
+
+model-viewer{
+    width:100%;
+    height:250px;
+    background:rgba(255,255,255,.05);
+    border-radius:15px;
+}
+
+.nombre{
+    font-size:22px;
+    font-weight:bold;
+    margin-top:12px;
+}
+
+.fecha{
+    opacity:.7;
+    font-size:13px;
+    margin-top:5px;
+}
+
+.vacio{
+    text-align:center;
+    padding:40px;
+    opacity:.7;
+}
+
+.volver{
+    position:fixed;
+    top:15px;
+    left:15px;
+    border:0;
+    border-radius:999px;
+    padding:12px 18px;
+    background:rgba(255,255,255,.15);
+    color:white;
+    cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<button class="volver"
+onclick="window.location.href='index.html'">
+← Volver </button>
+
+<header>
+    <h1>📖 Cartilla de Bichitos</h1>
+    <p>Tu colección de criaturas encontradas</p>
+</header>
+
+<div id="contenedor" class="contenedor"></div>
+
+<script>
+
+const contenedor =
+document.getElementById("contenedor");
+
+const bichitos =
+JSON.parse(localStorage.getItem("bichitos")) || [];
+
+if(bichitos.length === 0){
+
+    contenedor.innerHTML = `
+        <div class="vacio">
+            Todavía no capturaste ningún bichito.
+        </div>
+    `;
+
+}else{
+
+    bichitos.forEach(bichito => {
+
+        const tarjeta =
+        document.createElement("div");
+
+        tarjeta.className = "tarjeta";
+
+        tarjeta.innerHTML = `
+            <model-viewer
+                src="${bichito.modelo}"
+                camera-controls
+                auto-rotate
+                shadow-intensity="1">
+            </model-viewer>
+
+            <div class="nombre">
+                ${bichito.nombre}
+            </div>
+
+            <div class="fecha">
+                Capturado: ${bichito.fecha}
+            </div>
+        `;
+
+        contenedor.appendChild(tarjeta);
+
+    });
+
+}
+
+</script>
+
+</body>
+</html>
