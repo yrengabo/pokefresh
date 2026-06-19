@@ -1,10 +1,149 @@
-<video id="video" autoplay playsinline></video>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<script>
-navigator.mediaDevices.getUserMedia({
-  video: { facingMode: "environment" }
-})
-.then(stream => {
-  document.getElementById("video").srcObject = stream;
-});
-</script>
+  <title>Buscar Bichito</title>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+
+    video {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      background: black;
+    }
+
+    .hud {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      display: grid;
+      place-items: center;
+    }
+
+    .reticula {
+      width: 170px;
+      height: 170px;
+      border: 3px solid rgba(69,243,255,.9);
+      border-radius: 50%;
+      box-shadow: 0 0 30px rgba(69,243,255,.8);
+      animation: pulse 1.5s infinite;
+    }
+
+    .mensaje {
+      position: fixed;
+      top: 24px;
+      left: 16px;
+      right: 16px;
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(0,0,0,.45);
+      backdrop-filter: blur(10px);
+      text-align: center;
+      font-size: 15px;
+    }
+
+    .bichito {
+      position: fixed;
+      left: 50%;
+      top: 52%;
+      transform: translate(-50%, -50%);
+      font-size: 90px;
+      display: none;
+      animation: aparecer .6s ease;
+    }
+
+    button {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 0;
+      padding: 14px 22px;
+      border-radius: 999px;
+      font-weight: bold;
+      background: #45f3ff;
+      color: #06111f;
+      z-index: 10;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(.95); opacity: .7; }
+      50% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(.95); opacity: .7; }
+    }
+
+    @keyframes aparecer {
+      from { transform: translate(-50%, -50%) scale(.3); opacity: 0; }
+      to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <video id="video" autoplay playsinline></video>
+
+  <div class="mensaje" id="mensaje">
+    Escanea el entorno...
+  </div>
+
+  <div class="hud">
+    <div class="reticula"></div>
+  </div>
+
+  <div class="bichito" id="bichito">🐉</div>
+
+  <button onclick="capturarBichito()">Capturar bichito</button>
+
+  <script>
+    const video = document.getElementById("video");
+    const mensaje = document.getElementById("mensaje");
+    const bichito = document.getElementById("bichito");
+
+    iniciarCamara();
+
+    function iniciarCamara() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        mensaje.innerHTML = "Tu navegador no permite abrir la cámara.";
+        return;
+      }
+
+      navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: "environment"
+        },
+        audio: false
+      })
+      .then((stream) => {
+        video.srcObject = stream;
+
+        setTimeout(() => {
+          mensaje.innerHTML = "¡Movimiento detectado! El bichito apareció.";
+          bichito.style.display = "block";
+        }, 3000);
+      })
+      .catch(() => {
+        mensaje.innerHTML = "No se pudo abrir la cámara. Revisa permisos.";
+      });
+    }
+
+    function capturarBichito() {
+      mensaje.innerHTML = "¡Bichito capturado!";
+      bichito.innerHTML = "✨";
+    }
+  </script>
+
+</body>
+</html>
