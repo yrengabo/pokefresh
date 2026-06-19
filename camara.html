@@ -224,11 +224,26 @@ function iniciarCamara(){
 
 function capturarBichito(){
 
-    mensaje.innerHTML =
-    "✨ ¡Bichito capturado! ✨";
+    const bichitosGuardados =
+    JSON.parse(localStorage.getItem("bichitos")) || [];
 
-    bichito3D.style.display =
-    "none";
+    const nuevoBichito = {
+        id: "drakito",
+        nombre: "Drakito",
+        modelo: "dragon.glb",
+        fecha: new Date().toLocaleString()
+    };
+
+    const yaExiste =
+    bichitosGuardados.some(b => b.id === nuevoBichito.id);
+
+    if(!yaExiste){
+        bichitosGuardados.push(nuevoBichito);
+        localStorage.setItem("bichitos", JSON.stringify(bichitosGuardados));
+    }
+
+    mensaje.innerHTML = "✨ ¡Drakito guardado en tu cartilla! ✨";
+    bichito3D.style.display = "none";
 
 }
 
