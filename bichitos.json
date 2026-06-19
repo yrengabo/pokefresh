@@ -1,0 +1,31 @@
+[
+  {
+    "id": "drakito",
+    "nombre": "Drakito",
+    "modelo": "dragon.glb",
+    "lat": -17.759967,
+    "lng": -63.200844,
+    "radio": 50,
+    "rareza": "Comun"
+  },
+
+  {
+    "id": "fantasmin",
+    "nombre": "Fantasmín",
+    "modelo": "fantasma.glb",
+    "lat": -17.334790,
+    "lng": -63.256574,
+    "radio": 50,
+    "rareza": "Raro"
+  },
+
+  {
+    "id": "tortugon",
+    "nombre": "Tortugón",
+    "modelo": "tortugon.glb",
+    "lat": -17.762800,
+    "lng": -63.201000,
+    "radio": 50,
+    "rareza": "Legendario"
+  }
+]
