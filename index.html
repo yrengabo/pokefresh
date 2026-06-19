@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Radar de Bichitos</title>
+
   <style>
     body {
       margin: 0;
@@ -35,6 +36,12 @@
       cursor: pointer;
       background: #45f3ff;
       color: #06111f;
+      margin-top: 12px;
+    }
+
+    #btnCamara {
+      display: none;
+      background: #9cff6b;
     }
 
     .bicho {
@@ -57,6 +64,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <div class="card">
@@ -67,24 +75,27 @@
 
     <button onclick="buscarBichito()">Buscar bichitos cerca</button>
 
+    <button id="btnCamara" onclick="abrirCamara()">
+      Buscar al bichito
+    </button>
+
     <div id="mensaje" class="info">
       Esperando ubicación...
     </div>
   </div>
 
   <script>
-    // Punto de prueba.
-    // Cambia estas coordenadas por tu ubicación real para probar.
     const bichito = {
       nombre: "Drakito",
       lat: -17.759967,
       lng: -63.200844,
-      radio: 1 // metros
+      radio: 50
     };
 
     function buscarBichito() {
       const mensaje = document.getElementById("mensaje");
       const bicho = document.getElementById("bicho");
+      const btnCamara = document.getElementById("btnCamara");
 
       if (!navigator.geolocation) {
         mensaje.innerHTML = "Tu navegador no soporta GPS.";
@@ -97,6 +108,7 @@
         (pos) => {
           const userLat = pos.coords.latitude;
           const userLng = pos.coords.longitude;
+          const precision = pos.coords.accuracy;
 
           const distancia = calcularDistancia(
             userLat,
@@ -109,15 +121,24 @@
             mensaje.innerHTML = `
               ¡Hay un bichito cerca!<br>
               Encontraste a <b>${bichito.nombre}</b>.<br>
-              Distancia aproximada: ${Math.round(distancia)} m.
+              Distancia aproximada: ${Math.round(distancia)} m.<br>
+              Precisión GPS: ${Math.round(precision)} m.
             `;
+
             bicho.style.display = "block";
+            btnCamara.style.display = "inline-block";
           } else {
             mensaje.innerHTML = `
               No hay bichitos cerca todavía.<br>
-              Distancia al más cercano: ${Math.round(distancia)} m.
+              Distancia al más cercano: ${Math.round(distancia)} m.<br>
+              Precisión GPS: ${Math.round(precision)} m.<br><br>
+              Tu ubicación detectada:<br>
+              Lat: ${userLat}<br>
+              Lng: ${userLng}
             `;
+
             bicho.style.display = "none";
+            btnCamara.style.display = "none";
           }
         },
         () => {
@@ -129,6 +150,10 @@
           maximumAge: 0
         }
       );
+    }
+
+    function abrirCamara() {
+      window.location.href = "camara.html";
     }
 
     function calcularDistancia(lat1, lon1, lat2, lon2) {
