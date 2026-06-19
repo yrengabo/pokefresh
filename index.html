@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Radar de Bichitos</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top, #183b5a, #07111f);
+      color: white;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+
+    .card {
+      width: 90%;
+      max-width: 420px;
+      padding: 28px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+
+    button {
+      border: 0;
+      padding: 15px 22px;
+      border-radius: 999px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #45f3ff;
+      color: #06111f;
+    }
+
+    .bicho {
+      font-size: 70px;
+      margin: 20px 0;
+      display: none;
+      animation: pop .5s ease;
+    }
+
+    @keyframes pop {
+      from { transform: scale(.3); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .info {
+      margin-top: 18px;
+      opacity: .85;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>Radar de Bichitos</h1>
+    <p>Abre el radar y busca si hay una criatura cerca.</p>
+
+    <div id="bicho" class="bicho">🐉</div>
+
+    <button onclick="buscarBichito()">Buscar bichitos cerca</button>
+
+    <div id="mensaje" class="info">
+      Esperando ubicación...
+    </div>
+  </div>
+
+  <script>
+    // Punto de prueba.
+    // Cambia estas coordenadas por tu ubicación real para probar.
+    const bichito = {
+      nombre: "Drakito",
+      lat: -17.7833,
+      lng: -63.1821,
+      radio: 5 // metros
+    };
+
+    function buscarBichito() {
+      const mensaje = document.getElementById("mensaje");
+      const bicho = document.getElementById("bicho");
+
+      if (!navigator.geolocation) {
+        mensaje.innerHTML = "Tu navegador no soporta GPS.";
+        return;
+      }
+
+      mensaje.innerHTML = "Buscando tu ubicación...";
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const userLat = pos.coords.latitude;
+          const userLng = pos.coords.longitude;
+
+          const distancia = calcularDistancia(
+            userLat,
+            userLng,
+            bichito.lat,
+            bichito.lng
+          );
+
+          if (distancia <= bichito.radio) {
+            mensaje.innerHTML = `
+              ¡Hay un bichito cerca!<br>
+              Encontraste a <b>${bichito.nombre}</b>.<br>
+              Distancia aproximada: ${Math.round(distancia)} m.
+            `;
+            bicho.style.display = "block";
+          } else {
+            mensaje.innerHTML = `
+              No hay bichitos cerca todavía.<br>
+              Distancia al más cercano: ${Math.round(distancia)} m.
+            `;
+            bicho.style.display = "none";
+          }
+        },
+        () => {
+          mensaje.innerHTML = "No se pudo acceder a tu ubicación. Activa permisos de GPS.";
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
+    }
+
+    function calcularDistancia(lat1, lon1, lat2, lon2) {
+      const R = 6371000;
+      const dLat = gradosARadianes(lat2 - lat1);
+      const dLon = gradosARadianes(lon2 - lon1);
+
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(gradosARadianes(lat1)) *
+        Math.cos(gradosARadianes(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    function gradosARadianes(grados) {
+      return grados * Math.PI / 180;
+    }
+  </script>
+
+</body>
+</html>
